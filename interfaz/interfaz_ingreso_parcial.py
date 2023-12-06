@@ -30,13 +30,6 @@ def bahias_disponibles(carroceria,id):
 
                 frame_contenido_dinamico = tk.Frame(root)
                 frame_contenido_dinamico.pack()
-                widgets = frame_contenido_dinamico.winfo_children()
-                for widget in widgets:
-                    # Destruir cada widget
-                    widget.destroy()
-
-                espacio_vertical_7 = tk.Label(frame_contenido_dinamico, text="", height=5)
-                espacio_vertical_7.pack()
 
                 etiqueta_texto = tk.Label(frame_contenido_dinamico, text="Las siguientes bahias estan disponibles: ", font=("Arial",25))
                 etiqueta_texto.pack()
@@ -49,12 +42,16 @@ def bahias_disponibles(carroceria,id):
 
                 def llamar():
                     texto= entrada_texto_bah.get()
-                    peticion_revision_de_registro(texto,id)
-
-                    
-
+                    estadoRegistro=peticion_revision_de_registro(texto,id)
+                    if estadoRegistro:
+                        root.destroy()
+                        subprocess.run(["python3", "./interfaz/main.py"]) 
+                    else :
+                        frame_contenido_dinamico.destroy()
+                        #boton.destroy()
+                        
                 # Botón en el frame
-                boton = tk.Button(frame_contenido, text="Registrar Ingreso",font=("Arial",20), 
+                boton = tk.Button(frame_contenido_dinamico, text="Registrar Ingreso",font=("Arial",20), 
                                   command=llamar)
                 boton.pack()
 
@@ -63,8 +60,6 @@ def bahias_disponibles(carroceria,id):
                 # Agregar espacios en blanco al principio para centrar visualmente el texto
                 mensaje_centralizado = "\n\n\n" + " " * 15 + mensaje
                 messagebox.showinfo("Mensaje", mensaje_centralizado)
-
-        
 
         else:
             # Mostrar el mensaje de error si la solicitud no fue exitosa
@@ -98,22 +93,28 @@ def peticion_revision_de_registro(id_bahia,id_vehiculo):
         # Verificar si la solicitud fue exitosa (código 200)
         if respuesta.status_code == 201:
             # Mostrar el resultado en formato JSON en la consola
-            print("Resultado de la solicitud:")
-            print(respuesta.json())
+            mensaje = "Registro exitoso"
+            # Agregar espacios en blanco al principio para centrar visualmente el texto
+            mensaje_centralizado = "\n\n\n" + " " * 15 + mensaje
+            messagebox.showinfo("Mensaje", mensaje_centralizado)
+            return True
         
 
         else:
-            # Mostrar el mensaje de error si la solicitud no fue exitosa
-            print(f"La solicitud no fue exitosa. Código de estado: {respuesta.status_code}")
+            mensaje = "Registro fallido, por favor escoja alguna de las bahias disponibles o rectifique que su vehiculo no tenga ningun registro activo"
+            # Agregar espacios en blanco al principio para centrar visualmente el texto
+            mensaje_centralizado = "\n\n\n" + " " * 15 + mensaje
+            messagebox.showinfo("Mensaje", mensaje_centralizado)
     except requests.RequestException as e:
         # Capturar errores de solicitud y mostrar el mensaje de error
         print(f"Error de solicitud: {e}")
 
 
-def peticion_placa(url):
+def peticion_placa(placa):
+    url_vehiculos=f"http://{main.HOST}:7070/api_parqueadero/vehiculos/{placa}"
     try:
         # Realizar la solicitud GET a la API
-        respuesta = requests.get(url)
+        respuesta = requests.get(url_vehiculos)
 
         # Verificar si la solicitud fue exitosa (código 200)xx
         if respuesta.status_code == 200:
@@ -127,17 +128,20 @@ def peticion_placa(url):
             bahias_disponibles(carroceria,id)
 
         else:
-            # Mostrar el mensaje de error si la solicitud no fue exitosa
-            print(f"La solicitud no fue exitosa. Código de estado: {respuesta.status_code}")
+            mensaje = "Su vehiculo no se encuentra registrado en la base de datos, por favor, responda el siguiente cuentionario: "
+            # Agregar espacios en blanco al principio para centrar visualmente el texto
+            mensaje_centralizado = "\n\n\n" + " " * 15 + mensaje
+            messagebox.showinfo("Mensaje", mensaje_centralizado)
+            subprocess.run(["python3", "./interfaz/registro_mensualidad.py"]) 
+            
     except requests.RequestException as e:
         # Capturar errores de solicitud y mostrar el mensaje de error
         print(f"Error de solicitud: {e}")
 
-
+    
 def obtener_texto():
-    texto_ingresado = entrada_texto.get()
-    url_vehiculos=f"http://{main.HOST}:7070/api_parqueadero/vehiculos/{texto_ingresado}"
-    peticion_placa(url_vehiculos)
+    placa = entrada_texto.get()
+    peticion_placa(placa)
 
 root = tk.Tk()
 root.title("Interfaz con Entrada de Texto")

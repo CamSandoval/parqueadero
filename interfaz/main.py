@@ -2,21 +2,21 @@ import tkinter as tk
 import subprocess 
 def accion_boton_1():
     root.destroy()
-    subprocess.run(["python", "./interfaz/interfaz_ingreso_parcial.py"]) 
+    subprocess.run(["python3", "./interfaz/interfaz_ingreso_parcial.py"]) 
 
 def accion_boton_2(): 
-    subprocess.run(["python", "./interfaz/Salida_Parcial.py"])  
     root.destroy()
+    subprocess.run(["python3", "./interfaz/Salida_Parcial.py"])  
     
 def accion_boton_3():
-    subprocess.run(["python", "./interfaz/interfaz_control_mensualidades.py"]) 
     root.destroy()
+    subprocess.run(["python3", "./interfaz/interfaz_control_mensualidades.py"]) 
      
 root = tk.Tk()
 root.title("PARQUEADERO CENTRAL")
 
 
-HOST = "10.200.10.142"
+HOST = "localhost"
 
 root.geometry("600x500")  
 espacio_vertical_5 = tk.Label(root, text="", height=3)

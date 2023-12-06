@@ -2,11 +2,11 @@ import tkinter as tk
 import subprocess 
 def accion_boton_1():
      subprocess.run([
-"python", "./interfaz/interfaz_Salida_Parcial.py"])  
+"python3", "./interfaz/retiroMensualidades.py"])  
 
 def accion_boton_2():
      subprocess.run([
-"python", "./interfaz/registro_mensualidad.py"])      
+"python3", "./interfaz/registro_mensualidad.py"])      
 
 root = tk.Tk()
 root.title("Interfaz con Botones")

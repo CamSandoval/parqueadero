@@ -5,30 +5,17 @@ import subprocess
 import main
 import json
 
-def dar_salida(id,placa,tipo,mensualidad):
-    data = {
-    "id":id,
-    "placa": placa,
-    "tipo": tipo,
-    "mensualidad":mensualidad
-    }
-    json_data = json.dumps(data)
-    print(data)
-
-    # Cabecera (headers) indicando el tipo de contenido
-    headers = {
-        'Content-Type': 'application/json'
-    }
+def cambiarMensualidad(placa):
     try:
         # Realizar la solicitud GET a la API
-        url_registro=f"http://{main.HOST}:7070/api_parqueadero/registros/salidas"
-        respuesta = requests.put(url_registro,data=json_data, headers=headers)
+        url_registro=f"http://{main.HOST}:7070/api_parqueadero/vehiculos/mensualidad/retirar/{placa}"
+        respuesta = requests.put(url_registro)
 
         # Verificar si la solicitud fue exitosa (código 200)
         if respuesta.status_code == 200:
             data=respuesta.json()
             # Mostrar el resultado en formato JSON en la consola
-            mensaje = f"salida exitosa, hora de entrada: {data['hora_ingreso']}, hora de salida: {data['hora_salida']}, con un total a pagar de: {data['pago']} pesos"
+            mensaje = f"Mensualidad Retirada a el vehiculo de placa: {data['placa']}"
             # Agregar espacios en blanco al principio para centrar visualmente el texto
             mensaje_centralizado = "\n\n\n" + " " * 15 + mensaje
             messagebox.showinfo("Mensaje", mensaje_centralizado)
@@ -37,7 +24,7 @@ def dar_salida(id,placa,tipo,mensualidad):
         
 
         else:
-            mensaje = "Salida fallida, por favor rectifique los datos"
+            mensaje = "Retiro Fallido"
             # Agregar espacios en blanco al principio para centrar visualmente el texto
             mensaje_centralizado = "\n\n\n" + " " * 15 + mensaje
             messagebox.showinfo("Mensaje", mensaje_centralizado)
@@ -62,17 +49,17 @@ def peticion_placa(placa):
             mensualidad=data['mensualidad']
             print(respuesta.json())
             #print(type(diccionario))
-            if registro_Activo(id):
-                dar_salida(id,placa,carroceria,mensualidad)
+            if mensualidad:
+                cambiarMensualidad(placa)
             else:
-                mensaje = "El vehiculo no se encuentra dentro del parqueadero "
+                mensaje = "El vehiculo no cuenta con mensualidad activa "
                 # Agregar espacios en blanco al principio para centrar visualmente el texto
                 mensaje_centralizado = "\n\n\n" + " " * 15 + mensaje
                 messagebox.showinfo("Mensaje", mensaje_centralizado)
                 return
 
         else:
-            mensaje = "Su vehiculo no esta registrado en el parqueadero"
+            mensaje = "Su vehiculo no se encuentra registrado en la base de datos"
             # Agregar espacios en blanco al principio para centrar visualmente el texto
             mensaje_centralizado = "\n\n\n" + " " * 15 + mensaje
             messagebox.showinfo("Mensaje", mensaje_centralizado)
@@ -104,14 +91,14 @@ def obtener_texto():
     peticion_placa(placa)
 
 root = tk.Tk()
-root.title("Interfaz de salida parcial")
+root.title("Interfaz de retiro de mensualidades")
 root.geometry("800x600") 
 espacio_vertical_6 = tk.Label(root, text="", height=5)
 espacio_vertical_6.pack()
 
 
 # Título centrado
-titulo = tk.Label(root, text="SALIDA DE VEHICULOS", font=("Arial", 35))
+titulo = tk.Label(root, text="RETIRO DE MENSUALIDADES", font=("Arial", 35))
 titulo.pack()
 
 espacio_vertical_7 = tk.Label(root, text="", height=5)
